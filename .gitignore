@@ -1,0 +1,11 @@
+# Environnement virtuel
+.venv/
+
+# Caches Python / pytest
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Données locales : la base SQLite ne doit jamais partir sur GitHub
+instance/
+*.db
