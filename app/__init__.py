@@ -19,9 +19,11 @@ def create_app(test_config: dict | None = None) -> Flask:
     # Le dossier instance/ contient la base : il est ignoré par git.
     os.makedirs(app.instance_path, exist_ok=True)
 
-    from . import db
+    from . import db, filters, routes
 
     db.init_app(app)
+    filters.init_app(app)
+    app.register_blueprint(routes.bp)
 
     # Le schéma est idempotent : on le joue au démarrage pour que l'app
     # fonctionne même si `flask init-db` a été oublié.
