@@ -4,13 +4,14 @@ import shutil
 import sqlite3
 import subprocess
 from contextlib import closing
+from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
 
 from app import create_app, queries
-from app.filters import paris_datetime
+from app.filters import paris_datetime, today_paris
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -309,14 +310,29 @@ def test_init_db_command_keeps_existing_tasks(app, client, db_path):
 @pytest.mark.parametrize(
     ("utc", "paris"),
     [
-        ("2026-01-15T09:00:00.000Z", "15/01/2026 à 10:00"),  # heure d'hiver (UTC+1)
-        ("2026-07-15T08:00:00.000Z", "15/07/2026 à 10:00"),  # heure d'été (UTC+2)
-        ("2026-12-31T23:30:00.000Z", "01/01/2027 à 00:30"),  # changement de jour
+        ("2026-01-15T09:00:00.000Z", "15 / 01 / 2026 à 10:00"),  # heure d'hiver (UTC+1)
+        ("2026-07-15T08:00:00.000Z", "15 / 07 / 2026 à 10:00"),  # heure d'été (UTC+2)
+        ("2026-12-31T23:30:00.000Z", "01 / 01 / 2027 à 00:30"),  # changement de jour
         (None, ""),
     ],
 )
 def test_paris_datetime(utc, paris):
     assert paris_datetime(utc) == paris
+
+
+@pytest.mark.parametrize(
+    ("utc", "label"),
+    [
+        (datetime(2026, 11, 18, 12, 0, tzinfo=timezone.utc), "mercredi 18 novembre 2026"),
+        (datetime(2026, 8, 2, 23, 30, tzinfo=timezone.utc), "lundi 3 août 2026"),  # déjà lundi à Paris
+    ],
+)
+def test_today_paris(utc, label):
+    assert today_paris(utc) == label
+
+
+def test_page_shows_todays_date(client):
+    assert today_paris() in client.get("/").get_data(as_text=True)
 
 
 def test_page_shows_creation_and_completion_dates_in_paris_time(client, db_path):
@@ -326,8 +342,8 @@ def test_page_shows_creation_and_completion_dates_in_paris_time(client, db_path)
         ("Faite", "2026-03-02T08:15:00.000Z", "2026-03-02T16:45:00.000Z"),
     )
     html = client.get("/").get_data(as_text=True)
-    assert "02/03/2026 à 09:15" in html
-    assert "02/03/2026 à 17:45" in html
+    assert "02 / 03 / 2026 à 09:15" in html
+    assert "02 / 03 / 2026 à 17:45" in html
 
 
 # --------------------------------------------------------------------------- #

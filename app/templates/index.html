@@ -1,76 +1,92 @@
 {% extends "base.html" %}
 
-{% block title %}({{ stats.pct }} %) Tâches de travail{% endblock %}
+{% block title %}Tâches de travail ({{ stats.pct }} %){% endblock %}
 
 {% block content %}
-<header class="header">
-  <h1>Tâches de travail</h1>
-  <div class="progress" role="progressbar" aria-label="Progression"
-       aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ stats.pct }}">
-    <div class="progress-bar" style="width: {{ stats.pct }}%"></div>
-  </div>
-  <p class="progress-text" id="progress-text">
-    <strong>{{ stats.done }} / {{ stats.total }}</strong>
-    terminée{{ 's' if stats.done > 1 }} ({{ stats.pct }}&nbsp;%)
-  </p>
-</header>
+<section class="band band--peach" aria-labelledby="todo-heading">
+  <div class="wrap">
+    <p class="eyebrow">Suivi du travail.</p>
+    <h1>Mes tâches</h1>
 
-<form class="add-form" method="post" action="{{ url_for('tasks.create_task') }}">
-  <label for="title" class="visually-hidden">Nouvelle tâche</label>
-  <input id="title" name="title" type="text" placeholder="Nouvelle tâche…"
-         maxlength="{{ max_title_length }}" required autofocus autocomplete="off">
-  <button type="submit" class="btn btn-primary">Ajouter</button>
-</form>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-  <p class="flash flash-{{ category }}" role="alert">{{ message }}</p>
-  {% endfor %}
-{% endwith %}
-
-<section class="card" aria-labelledby="todo-heading">
-  <h2 id="todo-heading">À faire <span class="count">{{ todo|length }}</span></h2>
-  {% if todo %}
-  <ol class="task-list" id="todo-list">
-    {% for task in todo %}
-    <li class="task">
-      <div class="task-body">
-        <span class="task-title">{{ task.title }}</span>
-        <span class="task-meta">
-          Ajoutée le <time datetime="{{ task.created_at }}">{{ task.created_at|paris }}</time>
-        </span>
+    <div class="card panel">
+      <p class="progress-text" id="progress-text">
+        <strong>{{ stats.done }} / {{ stats.total }}</strong>
+        terminée{{ 's' if stats.done > 1 }} ({{ stats.pct }}&nbsp;%)
+      </p>
+      <div class="progress" role="progressbar" aria-label="Progression"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ stats.pct }}">
+        <div class="progress__bar" style="width: {{ stats.pct }}%"></div>
       </div>
-      <form method="post" action="{{ url_for('tasks.complete_task', task_id=task.id) }}">
-        <button type="submit" class="btn btn-outline"
-                aria-label="Valider « {{ task.title }} »">Valider</button>
+
+      <form class="add-form" method="post" action="{{ url_for('tasks.create_task') }}">
+        <label for="title" class="visually-hidden">Nouvelle tâche</label>
+        <input id="title" name="title" type="text" placeholder="Nouvelle tâche…"
+               maxlength="{{ max_title_length }}" required autofocus autocomplete="off">
+        <button type="submit" class="btn btn--filled btn--chevron">Ajouter</button>
       </form>
-    </li>
-    {% endfor %}
-  </ol>
-  {% else %}
-  <p class="empty">Rien à faire pour l'instant.</p>
-  {% endif %}
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <p class="flash flash--{{ category }}" role="alert">{{ message }}</p>
+        {% endfor %}
+      {% endwith %}
+    </div>
+
+    <div class="section-head">
+      <h2 id="todo-heading">À faire</h2>
+      <span class="count">{{ todo|length }}</span>
+    </div>
+    {% if todo %}
+    <ol class="task-list" id="todo-list">
+      {% for task in todo %}
+      <li class="card task">
+        <div class="task__body">
+          <span class="task-title">{{ task.title }}</span>
+          <span class="task__meta">
+            Ajoutée le <time datetime="{{ task.created_at }}">{{ task.created_at|paris }}</time>
+          </span>
+        </div>
+        <form method="post" action="{{ url_for('tasks.complete_task', task_id=task.id) }}">
+          <button type="submit" class="btn btn--outline btn--check"
+                  aria-label="Valider « {{ task.title }} »">Valider</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="card empty">Rien à faire pour l'instant.</p>
+    {% endif %}
+  </div>
 </section>
 
-<section class="card" aria-labelledby="done-heading">
-  <h2 id="done-heading">Terminées <span class="count">{{ done|length }}</span></h2>
-  {% if done %}
-  <ol class="task-list" id="done-list">
-    {% for task in done %}
-    <li class="task task-done">
-      <span class="check" aria-hidden="true">✓</span>
-      <div class="task-body">
-        <span class="task-title">{{ task.title }}</span>
-        <span class="task-meta">
-          Ajoutée le <time datetime="{{ task.created_at }}">{{ task.created_at|paris }}</time>
-          · terminée le <time datetime="{{ task.completed_at }}">{{ task.completed_at|paris }}</time>
-        </span>
-      </div>
-    </li>
-    {% endfor %}
-  </ol>
-  {% else %}
-  <p class="empty">Aucune tâche terminée pour l'instant.</p>
-  {% endif %}
+<section class="band band--grey" aria-labelledby="done-heading">
+  <div class="wrap">
+    <p class="eyebrow">Historique.</p>
+    <div class="section-head">
+      <h2 id="done-heading">Terminées</h2>
+      <span class="count">{{ done|length }}</span>
+    </div>
+    {% if done %}
+    <ol class="task-list" id="done-list">
+      {% for task in done %}
+      <li class="card task task--done">
+        <svg class="task__check" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+          <circle cx="14" cy="14" r="13.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8.5 14.5l3.5 3.5 7.5-8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <div class="task__body">
+          <span class="task-title">{{ task.title }}</span>
+          <span class="task__meta">
+            Ajoutée le <time datetime="{{ task.created_at }}">{{ task.created_at|paris }}</time>
+            · terminée le <time datetime="{{ task.completed_at }}">{{ task.completed_at|paris }}</time>
+          </span>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="card empty">Aucune tâche terminée pour l'instant.</p>
+    {% endif %}
+  </div>
 </section>
 {% endblock %}

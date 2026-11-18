@@ -9,6 +9,8 @@ Petite to-do list de travail, en local : on note les tâches au fil de l'eau, on
 
 Stack : Python 3.11+, Flask, SQLite (module `sqlite3` de la bibliothèque standard), templates Jinja2, CSS maison, pytest.
 
+Le design reprend l'identité visuelle du site [test-institut-etudes.com](https://www.test-institut-etudes.com/) : orange `#FF5E14`, fond pêche, texte bleu marine, titres en majuscules, cartes blanches, polices Barlow et Rajdhani.
+
 ## Installation
 
 ```bash
@@ -58,7 +60,7 @@ Dans le fichier `instance/todo.db`, à côté du code. L'environnement virtuel `
 - **Repartir de zéro** : supprimer ce fichier, puis relancer `flask --app app init-db`.
 - **Confidentialité** : `instance/` et `*.db` sont dans `.gitignore`, les tâches ne partent jamais sur GitHub.
 
-Les dates sont stockées en UTC (`created_at`, `completed_at`) et affichées en heure de Paris.
+Les dates sont stockées en UTC (`created_at`, `completed_at`) et affichées en heure de Paris, au format `18 / 11 / 2026 à 10:30`.
 
 ## Structure
 
@@ -71,7 +73,9 @@ app/
 ├── filters.py       filtre Jinja `paris` (UTC -> heure de Paris)
 ├── schema.sql       table tasks
 ├── templates/       base.html, index.html
-└── static/          style.css (thème blanc et bleu)
+└── static/
+    ├── style.css    thème orange / pêche / bleu marine
+    └── fonts/       Barlow et Rajdhani (woff2, licence SIL OFL 1.1)
 tests/test_tasks.py
 ```
 
@@ -81,7 +85,7 @@ tests/test_tasks.py
 | POST    | `/tasks`           | Ajouter une tâche, puis redirection vers `/`|
 | POST    | `/tasks/<id>/done` | Valider une tâche, puis redirection vers `/`|
 
-Chaque action se termine par une redirection (Post/Redirect/Get) : rafraîchir la page ne ré-ajoute rien. Aucun JavaScript n'est nécessaire.
+Chaque action se termine par une redirection (Post/Redirect/Get) : rafraîchir la page ne ré-ajoute rien. Aucun JavaScript n'est nécessaire, et la page ne charge aucune ressource externe : les polices sont servies depuis `app/static/fonts/`.
 
 ## Hébergement
 
