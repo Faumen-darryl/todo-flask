@@ -21,7 +21,7 @@
           <span class="brand__tagline">Tâches de travail</span>
         </span>
       </a>
-      <p class="site-header__date">{{ today_paris() }}</p>
+      <p class="site-header__date" id="today">{{ today_paris() }}</p>
     </div>
   </header>
 
@@ -31,8 +31,15 @@
 
   <footer class="site-footer">
     <div class="wrap">
+      {% if config.STATIC_SITE %}
+      <p>Version en ligne · les tâches restent dans votre navigateur</p>
+      {% else %}
       <p>Application locale · les tâches restent sur cet ordinateur</p>
+      {% endif %}
     </div>
   </footer>
+  {% if config.STATIC_SITE %}
+  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% endif %}
 </body>
 </html>

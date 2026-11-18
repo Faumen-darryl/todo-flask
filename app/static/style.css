@@ -316,6 +316,16 @@ h2 {
   border-left: 4px solid var(--orange);
 }
 
+.flash--info {
+  color: var(--navy);
+  background: var(--grey-50);
+  border-left: 4px solid var(--navy);
+}
+
+[hidden] {
+  display: none !important;
+}
+
 /* ------------------------------------------------------------------ */
 /* Boutons : majuscules, gras, chevron                                 */
 /* ------------------------------------------------------------------ */
@@ -448,6 +458,45 @@ h2 {
   color: var(--grey-600);
 }
 
+/* Sauvegarde (version en ligne uniquement) */
+.backup {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 32px;
+  padding: 20px 24px;
+  border-left: 4px solid var(--orange);
+}
+
+.backup__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.backup__text p {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.backup__text .backup__title {
+  margin-bottom: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.backup__actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+#import-file:focus-visible + label {
+  box-shadow: 0 0 0 3px var(--orange-focus);
+}
+
 /* ------------------------------------------------------------------ */
 /* Pied de page                                                        */
 /* ------------------------------------------------------------------ */
@@ -504,5 +553,12 @@ h2 {
   .task {
     padding: 16px;
     gap: 12px;
+  }
+
+  .backup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
   }
 }

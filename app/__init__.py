@@ -12,6 +12,9 @@ def create_app(test_config: dict | None = None) -> Flask:
         # Sert uniquement aux messages flash ; l'app tourne en local.
         SECRET_KEY=os.environ.get("TODO_SECRET_KEY") or secrets.token_hex(32),
         DATABASE=os.path.join(app.instance_path, "todo.db"),
+        # True uniquement pour générer le site GitHub Pages (figer.py) : la page
+        # est rendue vide et c'est le JavaScript qui gère les tâches dans le navigateur.
+        STATIC_SITE=False,
     )
     if test_config is not None:
         app.config.update(test_config)

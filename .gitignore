@@ -9,3 +9,7 @@ __pycache__/
 # Données locales : la base SQLite ne doit jamais partir sur GitHub
 instance/
 *.db
+
+# Site figé (généré par figer.py)
+build/
+node_modules/
