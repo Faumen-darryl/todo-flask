@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}({{ stats.pct }} %) Tâches de travail{% endblock %}
+
+{% block content %}
+<header class="header">
+  <h1>Tâches de travail</h1>
+  <div class="progress" role="progressbar" aria-label="Progression"
+       aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ stats.pct }}">
+    <div class="progress-bar" style="width: {{ stats.pct }}%"></div>
+  </div>
+  <p class="progress-text" id="progress-text">
+    <strong>{{ stats.done }} / {{ stats.total }}</strong>
+    terminée{{ 's' if stats.done > 1 }} ({{ stats.pct }}&nbsp;%)
+  </p>
+</header>
+
+<form class="add-form" method="post" action="{{ url_for('tasks.create_task') }}">
+  <label for="title" class="visually-hidden">Nouvelle tâche</label>
+  <input id="title" name="title" type="text" placeholder="Nouvelle tâche…"
+         maxlength="{{ max_title_length }}" required autofocus autocomplete="off">
+  <button type="submit" class="btn btn-primary">Ajouter</button>
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+  <p class="flash flash-{{ category }}" role="alert">{{ message }}</p>
+  {% endfor %}
+{% endwith %}
+
+<section class="card" aria-labelledby="todo-heading">
+  <h2 id="todo-heading">À faire <span class="count">{{ todo|length }}</span></h2>
+  {% if todo %}
+  <ol class="task-list" id="todo-list">
+    {% for task in todo %}
+    <li class="task">
+      <div class="task-body">
+        <span class="task-title">{{ task.title }}</span>
+        <span class="task-meta">
+          Ajoutée le <time datetime="{{ task.created_at }}">{{ task.created_at|paris }}</time>
+        </span>
+      </div>
+      <form method="post" action="{{ url_for('tasks.complete_task', task_id=task.id) }}">
+        <button type="submit" class="btn btn-outline"
+                aria-label="Valider « {{ task.title }} »">Valider</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="empty">Rien à faire pour l'instant.</p>
+  {% endif %}
+</section>
+
+<section class="card" aria-labelledby="done-heading">
+  <h2 id="done-heading">Terminées <span class="count">{{ done|length }}</span></h2>
+  {% if done %}
+  <ol class="task-list" id="done-list">
+    {% for task in done %}
+    <li class="task task-done">
+      <span class="check" aria-hidden="true">✓</span>
+      <div class="task-body">
+        <span class="task-title">{{ task.title }}</span>
+        <span class="task-meta">
+          Ajoutée le <time datetime="{{ task.created_at }}">{{ task.created_at|paris }}</time>
+          · terminée le <time datetime="{{ task.completed_at }}">{{ task.completed_at|paris }}</time>
+        </span>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="empty">Aucune tâche terminée pour l'instant.</p>
+  {% endif %}
+</section>
+{% endblock %}
