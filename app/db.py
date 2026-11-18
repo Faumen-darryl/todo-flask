@@ -4,6 +4,7 @@ import sqlite3
 
 import click
 from flask import current_app, g
+from flask.cli import with_appcontext
 
 
 def get_db() -> sqlite3.Connection:
@@ -28,6 +29,7 @@ def init_db() -> None:
 
 
 @click.command("init-db")
+@with_appcontext
 def init_db_command() -> None:
     """Crée la base SQLite (sans effacer les tâches existantes)."""
     init_db()
